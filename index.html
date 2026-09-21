@@ -310,8 +310,7 @@ function panggilGAS(namaFungsi, dataForm, fungsiSukses, fungsiGagal) {
   .catch(error => {
     console.error("Fetch Error:", error);
     if (fungsiGagal) fungsiGagal(error);
-  });
-}
+      
         const formatRupiah = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 
         const bankLogos = {
