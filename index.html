@@ -292,12 +292,16 @@
     // Fungsi pengganti google.script.run
     function panggilGAS(namaFungsi, dataForm, fungsiSukses, fungsiGagal) {
       fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ 
-          action: namaFungsi, 
-          data: dataForm 
-        })
-      })
+  method: "POST",
+  redirect: "follow", // Wajib ditambahkan karena GAS selalu me-redirect (302) response POST
+  headers: {
+    "Content-Type": "text/plain;charset=utf-8", // Gunakan text/plain untuk menghindari pemblokiran CORS OPTIONS
+  },
+  body: JSON.stringify({ 
+    action: namaFungsi, 
+    data: dataForm 
+  })
+})
       .then(response => response.json())
       .then(result => {
         if (result.status === "success" && fungsiSukses) {
