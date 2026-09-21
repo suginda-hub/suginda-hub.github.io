@@ -286,7 +286,32 @@
     </div>
 </div>
 
-    <script>
+    <script
+        const GAS_URL = "MASUKKAN_URL_WEB_APP_ANDA_DI_SINI";
+
+// Fungsi pengganti google.script.run
+function panggilGAS(namaFungsi, dataForm, fungsiSukses, fungsiGagal) {
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify({ 
+      action: namaFungsi, 
+      data: dataForm 
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.status === "success" && fungsiSukses) {
+      // Mengirimkan data balasan ke fungsi handler sukses
+      fungsiSukses(result.data || result.message); 
+    } else if (result.status === "error" && fungsiGagal) {
+      fungsiGagal(result.message);
+    }
+  })
+  .catch(error => {
+    console.error("Fetch Error:", error);
+    if (fungsiGagal) fungsiGagal(error);
+  });
+}
         const formatRupiah = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 
         const bankLogos = {
