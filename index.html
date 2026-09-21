@@ -2,35 +2,610 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Web Terintegrasi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laporan Keuangan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; text-align: center; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        :root {
+            --primary: #006d5b; --primary-light: #e8f5e9; --bg-color: #f4f7f6; --text-dark: #333; --text-gray: #777;
+            --success: #008a55; --danger: #dc3545; --warning: #f39c12; --white: #ffffff;
+        }
+        body { margin: 0; font-family: 'Nunito', sans-serif; background-color: var(--bg-color); color: var(--text-dark); -webkit-font-smoothing: antialiased; }
+        
+        /* LANDING PAGE (LOGIN) */
+        #view-landing { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary) 0%, #004d40 100%); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: opacity 0.5s; padding: 20px; box-sizing: border-box; }
+        .login-card { background: var(--white); padding: 40px 25px; border-radius: 12px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 350px; }
+        .login-card h2 { color: var(--primary); margin-bottom: 5px; font-size: 22px; }
+        .login-card p { color: var(--text-gray); font-size: 14px; margin-bottom: 25px; }
+        .btn-login { background: var(--primary); color: white; border: none; padding: 14px 20px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-login:hover { background: #005648; }
+
+        /* APP LAYOUT - TOP NAVIGATION */
+        #app-layout { display: none; flex-direction: column; min-height: 100vh; }
+        
+        .top-navbar { background-color: var(--primary); color: var(--white); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        
+        /* Baris 1: Logo & Profile */
+        .nav-header-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .nav-brand { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 800; }
+        .nav-brand i { font-size: 22px; color: #ffca28; } 
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+        .profile { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
+        .btn-logout { background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.3s; }
+        
+        /* Baris 2: Scrollable Menu */
+        .nav-menu { display: flex; overflow-x: auto; white-space: nowrap; padding: 0 10px; gap: 5px; scrollbar-width: none; }
+        .nav-menu::-webkit-scrollbar { display: none; }
+        .nav-item { padding: 12px 15px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: rgba(255,255,255,0.7); transition: 0.3s; border-bottom: 3px solid transparent; font-weight: 600; font-size: 13px; flex: 0 0 auto; }
+        .nav-item:hover, .nav-item.active { color: var(--white); border-bottom: 3px solid var(--white); }
+
+        /* MAIN CONTENT */
+        .main-content { padding: 15px; max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; flex: 1; }
+        
+        /* VIEWS */
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px; }
+        .page-header h2 { margin: 0; color: var(--primary); font-size: 18px; }
+        .page-header p { margin: 0; font-size: 11px; color: var(--success); background: var(--primary-light); padding: 4px 8px; border-radius: 4px; font-weight: 600; }
+
+        /* DASHBOARD CARDS */
+        .summary-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .card { background: var(--white); padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); border-left: 4px solid var(--success); }
+        .card.danger { border-left-color: var(--danger); }
+        .card-title { font-size: 10px; color: var(--text-gray); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+        .card-amount { font-size: 18px; font-weight: 800; color: var(--success); word-wrap: break-word; }
+        .card.danger .card-amount { color: var(--danger); }
+
+        /* PANELS */
+        .panel { background: var(--white); border-radius: 10px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 15px; }
+        .panel-title { background: var(--primary-light); color: var(--primary); padding: 10px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; }
+
+        /* TABLES / LISTS */
+        .data-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .data-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .text-success { color: var(--success); font-weight: 700;}
+        .text-danger { color: var(--danger); font-weight: 700;}
+        .text-warning { color: var(--warning); font-weight: 700;}
+        
+        .bank-logo { width: 40px; height: 25px; object-fit: contain; border-radius: 4px; background: #fff; padding: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .rek-info { display: flex; flex-direction: column; }
+        .rek-name { font-weight: 700; font-size: 14px; color: var(--text-dark); }
+        .rek-num { font-size: 11px; color: var(--text-gray); }
+
+        /* FORM STYLES */
+        .form-group { margin-bottom: 12px; width: 100%; }
+        label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: var(--text-dark); }
+        input, select { width: 100%; padding: 12px 15px; border: 1px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; font-family: 'Nunito', sans-serif; font-size: 14px; background-color: #fafafa; transition: 0.2s; outline: none; }
+        input:focus, select:focus { border-color: var(--primary); background-color: #fff; }
+        input[readonly], select[readonly] { background-color: #f0f0f0; color: #777; pointer-events: none; }
+        
+        .btn-submit { background: var(--primary); color: white; padding: 14px 20px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 5px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 109, 91, 0.2); }
+        .btn-delete { background: var(--danger); color: white; border: none; border-radius: 6px; padding: 8px 12px; font-size: 12px; cursor: pointer; transition: 0.2s; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+        
+        /* TRANSFER BOX STYLING */
+        #transfer-box { display: none; background: #fffde7; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #fff59d; }
+
+        /* INLINE FORM (ADD BANK) */
+        .inline-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        
+        /* LAYOUT SPESIFIK DESKTOP / TABLET BESAR */
+        @media (min-width: 768px) {
+            .nav-header-row { border-bottom: none; padding: 0 25px; height: 60px; }
+            .top-navbar { flex-direction: row; justify-content: space-between; align-items: center; }
+            .nav-menu { padding: 0; margin-left: 30px; flex: 1; }
+            .nav-item { padding: 20px 15px; }
+            .summary-cards { grid-template-columns: repeat(4, 1fr); }
+            .inline-form { flex-direction: row; align-items: flex-end; }
+            .inline-form .form-group { margin-bottom: 0; flex: 1; }
+            .inline-form button { margin-top: 0; width: auto; height: 45px; }
+            .desktop-row { display: flex; gap: 15px; }
+        }
+
+        /* TWEAK UNTUK HP KECIL */
+        @media (max-width: 380px) {
+            .summary-cards { grid-template-columns: 1fr; }
+            .card-amount { font-size: 20px; }
+        }
     </style>
 </head>
 <body>
+    <!-- LOGIN -->
+    <div id="view-landing">
+        <div class="login-card">
+            <h2>LAPORAN KEUANGAN</h2>
+            <p>Encep Suginda</p>
+            <button class="btn-login" onclick="masukAplikasi()">Masuk Dashboard</button>
+        </div>
+    </div>
 
-    <h1>Koneksi GitHub Pages ke Google Apps Script</h1>
-    <p>Klik tombol di bawah untuk menguji koneksi data ke Google Script Anda.</p>
+    <!-- APP LAYOUT -->
+    <div id="app-layout">
+        
+        <!-- TOP NAVBAR MOBILE-FIRST -->
+        <div class="top-navbar">
+            <div class="nav-header-row">
+                <div class="nav-brand"><i class="fas fa-sack-dollar"></i><span>KEUANGAN</span></div>
+                <div class="nav-right">
+                    <div class="profile"><i class="fas fa-user-circle" style="font-size: 18px;"></i> <span>ENCEP S.</span></div>
+                    <button class="btn-logout" onclick="keluarAplikasi()" title="Keluar"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="switchView('dashboard', this)"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></div>
+                <div class="nav-item" onclick="switchView('input', this)"><i class="fas fa-pen-to-square"></i> <span>Input</span></div>
+                <div class="nav-item" onclick="switchView('rekap', this)"><i class="fas fa-file-invoice-dollar"></i> <span>Laporan</span></div>
+                <div class="nav-item" onclick="switchView('rekening', this)"><i class="fas fa-building-columns"></i> <span>Rekening</span></div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content">
+            
+            <!-- DASHBOARD -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="page-header">
+                    <h2>Dashboard</h2>
+                    <p id="update-time">Memuat...</p>
+                </div>
+                
+                <div class="summary-cards">
+                    <div class="card"><div class="card-title"><i class="fas fa-coins" style="color: #ffb300;"></i> SALDO (HSBC)</div><div class="card-amount" id="card-saldo">Rp 0</div></div>
+                    <div class="card"><div class="card-title"><i class="fas fa-check-circle" style="color: var(--success);"></i> PENGELUARAN BLN INI</div><div class="card-amount" id="card-net">Rp 0</div></div>
+                    <div class="card"><div class="card-title"><i class="fas fa-arrow-up" style="color: #4285f4;"></i> MASUK HSBC</div><div class="card-amount" id="card-pemasukan">Rp 0</div></div>
+                    <div class="card danger"><div class="card-title"><i class="fas fa-arrow-down" style="color: #ea4335;"></i> KELUAR HSBC</div><div class="card-amount" id="card-pengeluaran">Rp 0</div></div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-title"><i class="fas fa-building"></i> Saldo per Rekening</div>
+                    <div id="saldo-rekening-dashboard">Memuat data...</div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-title"><i class="fas fa-clock"></i> 10 Transaksi Terakhir</div>
+                    <div id="riwayat-container">Memuat data...</div>
+                </div>
+            </div>
+
+            <!-- INPUT TRANSAKSI -->
+            <div id="view-input" class="view-section">
+                <div class="page-header"><h2>Input Transaksi</h2></div>
+                <div class="panel">
+                    <form id="keuanganForm" onsubmit="submitForm(event)">
+                        <div class="desktop-row">
+                            <div class="form-group">
+                                <label>Bulan</label>
+                                <select id="bulan" name="bulan" required>
+                                    <option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal</label>
+                                <input type="text" id="tanggal" name="tanggal" required readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Sumber Dana</label>
+                            <select id="rekening" name="rekening" required readonly>
+                                <option value="HSBC" selected>HSBC</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <select id="kategori" name="kategori" required onchange="toggleTransferFields()">
+                                <option value="" disabled selected>-- Pilih --</option>
+                                <option value="Pemasukan">Pemasukan</option>
+                                <option value="Pengeluaran">Pengeluaran</option>
+                                <option value="Transfer">Transfer / Pindah Buku</option>
+                            </select>
+                        </div>
+
+                        <div id="transfer-box">
+                            <div class="form-group">
+                                <label>Bank Tujuan</label>
+                                <select id="bank_tujuan" name="bank_tujuan" onchange="toggleBankBaru()">
+                                </select>
+                            </div>
+                            <div class="form-group" id="group_bank_baru" style="display:none;">
+                                <label>Nama Bank Baru</label>
+                                <input type="text" id="bank_tujuan_baru" name="bank_tujuan_baru" placeholder="Cth: BCA, Jago">
+                            </div>
+                            <div class="form-group">
+                                <label>Nomor Rekening Tujuan</label>
+                                <input type="text" id="rekening_tujuan" name="rekening_tujuan" placeholder="Nomor rekening">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Subkategori</label>
+                            <select id="subkategori" name="subkategori" required>
+                                <option value="" disabled selected>-- Pilih --</option>
+                                <option value="Gajihan">Gajihan</option><option value="Belanja dapur">Belanja dapur</option><option value="Hutang">Hutang</option><option value="Tabungan">Tabungan</option><option value="Bensin">Bensin</option><option value="Jajan">Jajan</option><option value="Healing">Healing</option><option value="Lain-lain">Lain-lain</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Uraian</label>
+                            <input type="text" id="uraian" name="uraian" placeholder="Cth: Beli sayur / Keperluan bulanan" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Jumlah (Rp)</label>
+                            <input type="tel" id="jumlah_tampil" placeholder="Cth: 50.000" required>
+                            <input type="hidden" id="jumlah" name="jumlah" required>
+                        </div>
+                        <button type="submit" class="btn-submit" id="btn-submit"><i class="fas fa-save"></i> Simpan Transaksi</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- REKAP -->
+            <div id="view-rekap" class="view-section">
+                <div class="page-header"><h2>Laporan & Rekap</h2></div>
+                <div class="panel">
+                    <button class="btn-submit" onclick="confirmReset()" style="background: var(--danger); margin-bottom: 20px;"><i class="fas fa-lock"></i> Tutup Buku & Arsipkan</button>
+                    <div class="panel-title"><i class="fas fa-archive"></i> Arsip Bulan Sebelumnya</div>
+                    <div id="rekap-container">Memuat data rekap...</div>
+                </div>
+            </div>
+
+            <!-- REKENING -->
+            <div id="view-rekening" class="view-section">
+    <div class="page-header"><h2>Manajemen Rekening</h2></div>
     
-    <button onclick="panggilScript()">Tes Koneksi Data</button>
+    <div class="panel">
+        <!-- 1. Tambahkan fungsi onclick dan ubah kursor agar terlihat seperti tombol -->
+        <div class="panel-title" onclick="toggleFormRekening()" style="cursor: pointer;">
+            <i class="fas fa-plus"></i> Tambah Rekening Baru
+        </div>
+        
+        <!-- 2. Tambahkan ID dan sembunyikan form secara default (display: none) -->
+        <div class="inline-form" id="form-tambah-rek" style="display: none; margin-top: 15px;">
+            <div class="form-group">
+                <label>Nama Bank/E-Wallet</label>
+                <input type="text" id="add-rek-nama" placeholder="Cth: BCA, BRI, Dana, OVO">
+            </div>
+            <div class="form-group">
+                <label>Nomor Rekening</label>
+                <input type="tel" id="add-rek-nomor" placeholder="Cth: 1234567890">
+            </div>
+            <button class="btn-submit" id="btn-tambah-rek" onclick="prosesTambahRekening()">
+                <i class="fas fa-check"></i> Simpan Bank
+            </button>
+        </div>
+    </div>
+    
+    <div class="panel">
+        <div class="panel-title"><i class="fas fa-wallet"></i> Status Semua Rekening</div>
+        <div id="saldo-rekening-full">Memuat data rekening...</div> 
+    </div>
+</div>
 
     <script>
-        // URL Web App Google Script Anda
-        const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbyOS0Cu9AWMApnQbN30hRZj3zuyVOXFSC7_PPFxKD75mN57xz4ClglHfNo1zkcT5Zw/exec";
+        const formatRupiah = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
 
-        function panggilScript() {
-            fetch(URL_WEB_APP)
-            .then(res => res.json())
-            .then(data => {
-                alert("Berhasil terhubung! Respons data: " + JSON.stringify(data));
-            })
-            .catch(err => {
-                alert("Error! Periksa kembali apakah pengaturan Deployment di Google Script sudah diset ke 'Anyone'.");
-                console.error(err);
-            });
+        const bankLogos = {
+    'hsbc': 'https://upload.wikimedia.org/wikipedia/commons/a/aa/HSBC_logo_%282018%29.svg',
+    'mandiri': 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg',
+    'bni': 'https://upload.wikimedia.org/wikipedia/id/5/55/BNI_logo.svg',
+    'bca': 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg',
+    'bri': 'https://upload.wikimedia.org/wikipedia/commons/2/2e/BRI_2020.svg',
+    'bsi': 'https://upload.wikimedia.org/wikipedia/commons/a/a0/Bank_Syariah_Indonesia.svg',
+    'gopay': 'https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg',
+    'dana': 'https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg',
+    'ovo': 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Logo_OVO.svg',
+    'shopeepay': 'https://upload.wikimedia.org/wikipedia/commons/f/fe/ShopeePay_Logo.png',
+    'tunai': 'https://cdn-icons-png.flaticon.com/512/2489/2489756.png',
+    'default': 'https://cdn-icons-png.flaticon.com/512/2830/2830284.png' 
+};
+
+        function getBankLogo(nama) {
+            let key = nama.toLowerCase().trim();
+            for (const [bank, url] of Object.entries(bankLogos)) {
+                if (key.includes(bank)) return url;
+            }
+            return bankLogos['default'];
         }
+
+        function masukAplikasi() {
+            document.getElementById('view-landing').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('view-landing').style.display = 'none';
+                document.getElementById('app-layout').style.display = 'flex';
+                loadDashboardData();
+            }, 500);
+        }
+
+        function keluarAplikasi() {
+            document.getElementById('app-layout').style.display = 'none';
+            document.getElementById('view-landing').style.display = 'flex';
+            setTimeout(() => { document.getElementById('view-landing').style.opacity = '1'; }, 50);
+        }
+
+        function switchView(viewName, element) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active');
+            element.classList.add('active');
+            
+            if (viewName === 'dashboard' || viewName === 'rekening' || viewName === 'input') loadDashboardData();
+            if (viewName === 'rekap') loadRekapData();
+        }
+
+        function setDefaultDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById("tanggal").value = `${day}/${month}/${year}`;
+            
+            const bulanArray = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById("bulan").value = bulanArray[today.getMonth()];
+            document.getElementById('update-time').innerText = `${day}/${month}/${year}, ${today.getHours()}:${String(today.getMinutes()).padStart(2, '0')}`;
+        }
+
+        document.getElementById('jumlah_tampil').addEventListener('input', function(e) {
+            let rawValue = this.value.replace(/[^0-9]/g, '');
+            document.getElementById('jumlah').value = rawValue;
+            if (rawValue !== '') this.value = parseInt(rawValue, 10).toLocaleString('id-ID');
+            else this.value = '';
+        });
+
+        function toggleTransferFields() {
+            const kat = document.getElementById('kategori').value;
+            const tfBox = document.getElementById('transfer-box');
+            if (kat === 'Transfer') {
+                tfBox.style.display = 'block';
+                document.getElementById('bank_tujuan').required = true;
+            } else {
+                tfBox.style.display = 'none';
+                document.getElementById('bank_tujuan').required = false;
+            }
+        }
+
+        function toggleBankBaru() {
+            const val = document.getElementById('bank_tujuan').value;
+            const rekInput = document.getElementById('rekening_tujuan');
+            if (val === 'baru') {
+                document.getElementById('group_bank_baru').style.display = 'block';
+                document.getElementById('bank_tujuan_baru').required = true;
+                rekInput.value = '';
+                rekInput.readOnly = false;
+            } else {
+                document.getElementById('group_bank_baru').style.display = 'none';
+                document.getElementById('bank_tujuan_baru').required = false;
+                const opt = document.getElementById('bank_tujuan').options[document.getElementById('bank_tujuan').selectedIndex];
+                rekInput.value = opt.getAttribute('data-nomor') || '';
+                rekInput.readOnly = true;
+            }
+        }
+
+        function loadDashboardData() {
+            google.script.run
+                .withSuccessHandler(function(data) {
+                    renderDashboard(data);
+                    renderRekeningOption(data.daftarRekening);
+                })
+                .getDashboardData();
+        }
+
+        function renderDashboard(data) {
+            document.getElementById('card-saldo').innerText = formatRupiah.format(data.totalSaldo);
+            document.getElementById('card-pemasukan').innerText = formatRupiah.format(data.totalPemasukan);
+            document.getElementById('card-pengeluaran').innerText = formatRupiah.format(data.totalPengeluaran);
+            
+            let elNet = document.getElementById('card-net');
+            elNet.innerText = formatRupiah.format(data.netBulanIni);
+            elNet.style.color = data.netBulanIni < 0 ? 'var(--danger)' : 'var(--success)';
+            
+            let htmlRekDashboard = "";
+            let htmlRekFull = "";
+            
+            // --- PERBAIKAN DIMULAI DARI SINI ---
+            
+            // 1. Tentukan urutan rekening yang diinginkan (huruf kecil semua)
+            const urutanPrioritas = ['hsbc', 'bsi', 'bsi istri', 'mandiri istri', 'tunai'];
+            
+            // 2. Ubah object rekening menjadi array lalu urutkan
+            let sortedRekening = Object.entries(data.saldoRekening).sort((a, b) => {
+                let indexA = urutanPrioritas.indexOf(a[0].toLowerCase());
+                let indexB = urutanPrioritas.indexOf(b[0].toLowerCase());
+                
+                // Jika nama rekening tidak ada di urutan prioritas, letakkan di paling bawah
+                if (indexA === -1) indexA = 999;
+                if (indexB === -1) indexB = 999;
+                
+                return indexA - indexB;
+            });
+
+            // 3. Gunakan 'sortedRekening' untuk looping (sebelumnya Object.entries(data.saldoRekening))
+            for (const [namaRekening, info] of sortedRekening) {
+            // --- PERBAIKAN SELESAI ---
+            
+                let logoUrl = getBankLogo(namaRekening);
+                let colorClass = info.saldo < 0 ? 'text-danger' : 'text-success';
+                
+                htmlRekDashboard += `
+                    <div class="data-row">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${logoUrl}" class="bank-logo" alt="${namaRekening}">
+                            <div class="rek-info">
+                                <span class="rek-name">${namaRekening}</span>
+                            </div>
+                        </div>
+                        <div class="${colorClass}" style="font-size: 14px;">${formatRupiah.format(info.saldo)}</div>
+                    </div>
+                `;
+
+                htmlRekFull += `
+                    <div class="data-row">
+                        <div style="display:flex; align-items:center; gap:10px; flex:1;">
+                            <img src="${logoUrl}" class="bank-logo" alt="${namaRekening}">
+                            <div class="rek-info">
+                                <span class="rek-name">${namaRekening}</span>
+                                <span class="rek-num">No: ${info.nomor}</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+                            <div class="${colorClass}" style="font-size: 14px;">
+                                ${formatRupiah.format(info.saldo)}
+                            </div>
+                            ${namaRekening.toLowerCase() === 'hsbc' ? 
+                                '<span style="font-size:10px; color:#aaa; font-weight:normal;">(Default Utama)</span>' : 
+                                `<button class="btn-delete" onclick="prosesHapusRekening('${namaRekening}')"><i class="fas fa-trash"></i> Hapus</button>`}
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('saldo-rekening-dashboard').innerHTML = htmlRekDashboard || "<div style='color:var(--text-gray); font-size:13px;'>Tidak ada rekening.</div>";
+            document.getElementById('saldo-rekening-full').innerHTML = htmlRekFull || "<div style='color:var(--text-gray); font-size:13px;'>Tidak ada rekening.</div>";
+
+            let container = document.getElementById('riwayat-container');
+            if (!data.riwayat || data.riwayat.length === 0) {
+                container.innerHTML = "<div style='color:var(--text-gray); font-size:13px;'>Belum ada transaksi.</div>";
+                return;
+            }
+
+            let htmlRiwayat = "";
+            data.riwayat.forEach(item => {
+                let isMasuk = item.kategori === 'Pemasukan';
+                let isTf = item.kategori === 'Transfer';
+                let colorClass = isMasuk ? 'text-success' : (isTf ? 'text-warning' : 'text-danger');
+                let tanda = isMasuk ? '+' : (isTf ? '<i class="fas fa-exchange-alt"></i>' : '-');
+                
+                htmlRiwayat += `
+                    <div class="data-row" style="align-items: flex-start;">
+                        <div style="flex:1;">
+                            <div style="color:var(--text-dark); font-weight:700;">${item.uraian}</div>
+                            <div style="font-size:11px; font-weight:normal; color:var(--text-gray); margin-top:2px;">
+                                ${item.tanggal} | ${isTf ? 'Tf ke ' + (item.target||'-') : (item.rekening||'HSBC')}
+                            </div>
+                        </div>
+                        <div class="${colorClass}" style="white-space: nowrap; margin-left: 10px;">
+                            ${tanda} ${formatRupiah.format(item.jumlah)}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = htmlRiwayat;
+            setDefaultDate();
+        }
+
+        function renderRekeningOption(daftarRekening) {
+            let selectTujuan = document.getElementById('bank_tujuan');
+            selectTujuan.innerHTML = `<option value="" disabled selected>-- Pilih Bank Tujuan --</option>`;
+            
+            if(daftarRekening) {
+                daftarRekening.forEach(rek => {
+                    if (rek.nama.toLowerCase() !== "hsbc") {
+                        let option = document.createElement("option");
+                        option.value = rek.nama;
+                        option.setAttribute("data-nomor", rek.nomor);
+                        option.text = rek.nama;
+                        selectTujuan.appendChild(option);
+                    }
+                });
+            }
+            selectTujuan.innerHTML += `<option value="baru">+ Tambah Bank Baru...</option>`;
+        }
+
+        function prosesTambahRekening() {
+            let nama = document.getElementById('add-rek-nama').value.trim();
+            let nomor = document.getElementById('add-rek-nomor').value.trim();
+            if(!nama) { alert("Nama rekening wajib diisi!"); return; }
+            
+            let btn = document.getElementById('btn-tambah-rek');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...'; btn.disabled = true;
+
+            google.script.run
+                .withSuccessHandler(function(data) {
+                    document.getElementById('add-rek-nama').value = "";
+                    document.getElementById('add-rek-nomor').value = "";
+                    btn.innerHTML = '<i class="fas fa-check"></i> Simpan Bank'; btn.disabled = false;
+                    renderDashboard(data);
+                    renderRekeningOption(data.daftarRekening);
+                    alert("Rekening berhasil ditambahkan.");
+                })
+                .tambahRekening(nama, nomor);
+        }
+
+        function prosesHapusRekening(nama) {
+            if(confirm("Hapus rekening '" + nama + "'? \nData historis tidak akan hilang.")) {
+                google.script.run
+                    .withSuccessHandler(function(data) {
+                        renderDashboard(data);
+                        renderRekeningOption(data.daftarRekening);
+                    })
+                    .hapusRekening(nama);
+            }
+        }
+
+        function submitForm(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            const form = document.getElementById('keuanganForm');
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    alert(res);
+                    btn.innerHTML = '<i class="fas fa-save"></i> Simpan Transaksi'; btn.disabled = false;
+                    form.reset();
+                    document.getElementById('jumlah').value = "";
+                    toggleTransferFields();
+                    setDefaultDate();
+                })
+                .withFailureHandler(function(err) {
+                    alert("Error: " + err.message);
+                    btn.innerHTML = '<i class="fas fa-save"></i> Simpan Transaksi'; btn.disabled = false;
+                })
+                .processForm(form);
+        }
+
+        function loadRekapData() {
+            google.script.run
+                .withSuccessHandler(function(data) {
+                    let container = document.getElementById('rekap-container');
+                    if (!data || data.length === 0) { container.innerHTML = "<div style='color:var(--text-gray); font-size:13px;'>Belum ada data arsip.</div>"; return; }
+                    let html = "";
+                    data.forEach(item => {
+                        html += `
+                            <div class="data-row" style="flex-direction:column; gap:5px; margin-bottom:15px; padding-bottom:15px; border-bottom:1px dashed #ccc; align-items: stretch;">
+                                <div style="color:var(--primary); font-size:15px; font-weight:800; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:5px;">${item.bulan}</div>
+                                <div style="display:flex; justify-content:space-between; font-weight:normal; font-size:13px;"><span>Pemasukan HSBC:</span> <span class="text-success">${formatRupiah.format(item.pemasukan)}</span></div>
+                                <div style="display:flex; justify-content:space-between; font-weight:normal; font-size:13px;"><span>Pengeluaran HSBC:</span> <span class="text-danger">${formatRupiah.format(item.pengeluaran)}</span></div>
+                                <div style="display:flex; justify-content:space-between; margin-top:5px; font-weight:700;"><span>Saldo Akhir HSBC:</span> <span>${formatRupiah.format(item.saldo)}</span></div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                })
+                .getRekapData();
+        }
+
+        function confirmReset() {
+            if (confirm("TUTUP BUKU BULAN INI?\nData akan direkap dan dikosongkan.")) {
+                google.script.run
+                    .withSuccessHandler(function(res) { alert(res); loadRekapData(); })
+                    .archiveAndResetData();
+            }
+        }
+function toggleFormRekening() {
+    var form = document.getElementById("form-tambah-rek");
+    // Ubah "block" menjadi "flex" jika class .inline-form Anda menggunakan display: flex
+    if (form.style.display === "none" || form.style.display === "") {
+        form.style.display = "block"; 
+    } else {
+        form.style.display = "none";
+    }
+}
+        window.onload = function() { setDefaultDate(); };
+
     </script>
 </body>
 </html>
