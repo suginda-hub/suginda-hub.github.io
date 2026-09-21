@@ -286,32 +286,40 @@
     </div>
 </div>
 
-    <script
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxIe6kfpJPa_v7JCWjcKgG_axVAZ3IBRXpvvXBs_cDUptXvJ68Nu8FpnFDzxItcGwc/exec";
+    <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxIe6kfpJPa_v7JCWjcKgG_axVAZ3IBRXpvvXBs_cDUptXvJ68Nu8FpnFDzxItcGwc/exec";
 
-// Fungsi pengganti google.script.run
-function panggilGAS(namaFungsi, dataForm, fungsiSukses, fungsiGagal) {
-  fetch(GAS_URL, {
-    method: "POST",
-    body: JSON.stringify({ 
-      action: namaFungsi, 
-      data: dataForm 
-    })
-  })
-  .then(response => response.json())
-  .then(result => {
-    if (result.status === "success" && fungsiSukses) {
-      // Mengirimkan data balasan ke fungsi handler sukses
-      fungsiSukses(result.data || result.message); 
-    } else if (result.status === "error" && fungsiGagal) {
-      fungsiGagal(result.message);
-    }
-  })
-  .catch(error => {
-    console.error("Fetch Error:", error);
-    if (fungsiGagal) fungsiGagal(error);
-      
-        const formatRupiah = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+    // Fungsi pengganti google.script.run
+    function panggilGAS(namaFungsi, dataForm, fungsiSukses, fungsiGagal) {
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ 
+          action: namaFungsi, 
+          data: dataForm 
+        })
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.status === "success" && fungsiSukses) {
+          // Mengirimkan data balasan ke fungsi handler sukses
+          fungsiSukses(result.data || result.message); 
+        } else if (result.status === "error" && fungsiGagal) {
+          fungsiGagal(result.message);
+        }
+      })
+      .catch(error => {
+        console.error("Fetch Error:", error);
+        if (fungsiGagal) fungsiGagal(error);
+      }); // Penutup untuk .catch()
+    } // Penutup untuk function panggilGAS()
+
+    // formatRupiah diletakkan di luar agar menjadi variabel global yang bisa dipanggil kapan saja
+    const formatRupiah = new Intl.NumberFormat('id-ID', { 
+      style: 'currency', 
+      currency: 'IDR', 
+      minimumFractionDigits: 0 
+    });
+</script>
 
         const bankLogos = {
     'hsbc': 'https://upload.wikimedia.org/wikipedia/commons/a/aa/HSBC_logo_%282018%29.svg',
