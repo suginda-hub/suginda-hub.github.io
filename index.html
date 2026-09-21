@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Laporan Keuangan</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#006d5b">
+    <link rel="apple-touch-icon" href="https://i.ibb.co.com/qQ6449S/animasi-berdua.png">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -630,6 +633,20 @@
     }
     
     window.onload = function() { setDefaultDate(); };
+    </script>
+    <script>
+        // Mendaftarkan Service Worker untuk PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker berhasil didaftarkan dengan scope: ', registration.scope);
+                })
+                .catch(err => {
+                    console.log('Pendaftaran ServiceWorker gagal: ', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>
