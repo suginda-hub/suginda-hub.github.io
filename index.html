@@ -337,9 +337,11 @@
                     renderRekeningOption(data.daftarRekening);
                     btn.innerHTML = 'Masuk Dashboard';
                     btn.disabled = false;
-                }, 500);
-            }, 
-            function(err) {
+                    // --- KODE BARU: Simpan status login ke browser ---
+                localStorage.setItem('isLoggedIn', 'true');
+            }, 500);
+        },
+         function(err) {
                 alert("Gagal memuat data: " + err);
                 btn.innerHTML = 'Masuk Dashboard';
                 btn.disabled = false;
@@ -351,6 +353,8 @@
         document.getElementById('app-layout').style.display = 'none';
         document.getElementById('view-landing').style.display = 'flex';
         setTimeout(() => { document.getElementById('view-landing').style.opacity = '1'; }, 50);
+        // --- KODE BARU: Hapus status login saat keluar ---
+    localStorage.removeItem('isLoggedIn');
     }
 
     function switchView(viewName, element) {
@@ -633,21 +637,16 @@
         }
     }
     
-    window.onload = function() { setDefaultDate(); };
-    </script>
-    <script>
-        // Mendaftarkan Service Worker untuk PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                .then(registration => {
-                    console.log('ServiceWorker berhasil didaftarkan dengan scope: ', registration.scope);
-                })
-                .catch(err => {
-                    console.log('Pendaftaran ServiceWorker gagal: ', err);
-                });
-            });
-        }
+    window.onload = function() { 
+    setDefaultDate(); 
+    
+    // Cek apakah pengguna sudah login sebelumnya
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        document.getElementById('view-landing').style.display = 'none';
+        document.getElementById('app-layout').style.display = 'flex';
+        loadDashboardData(); // Memuat ulang data dari server secara otomatis
+    }
+};
     </script>
 </body>
 </html>
