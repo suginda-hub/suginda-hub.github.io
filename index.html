@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#006d5b">
     <link rel="icon" type="image/x-icon" href="keuangan_192x192.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -637,16 +637,25 @@
         }
     }
     
-    window.onload = function() { 
+    // Ganti bagian window.onload dengan ini:
+document.addEventListener('DOMContentLoaded', function() {
     setDefaultDate(); 
     
-    // Cek apakah pengguna sudah login sebelumnya
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-        document.getElementById('view-landing').style.display = 'none';
-        document.getElementById('app-layout').style.display = 'flex';
-        loadDashboardData(); // Memuat ulang data dari server secara otomatis
+    try {
+        // Cek apakah pengguna sudah login sebelumnya
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            let landing = document.getElementById('view-landing');
+            landing.style.display = 'none';
+            landing.style.opacity = '0'; // Memastikan transisi opacity tidak menghalangi
+            
+            document.getElementById('app-layout').style.display = 'flex';
+            loadDashboardData(); // Memuat ulang data dari server secara otomatis
+        }
+    } catch (error) {
+        console.warn("localStorage diblokir oleh pengaturan privasi browser Anda.", error);
+        // Jika diblokir, pengguna memang harus login ulang setiap kali refresh
     }
-};
+});
     </script>
 </body>
 </html>
