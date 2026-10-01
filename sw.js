@@ -1,4 +1,4 @@
-const CACHE_NAME = 'keuangan-app-v1';
+const CACHE_NAME = 'keuangan-app-v2';
 const urlsToCache = [
   './',
   './index.html', // Sesuaikan jika nama file HTML Anda bukan index.html
