@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#006d5b">
     <link rel="icon" type="image/x-icon" href="keuangan_192x192.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -107,10 +107,9 @@
         <div class="login-card">
             <h2>LAPORAN KEUANGAN</h2>
             <p>Encep Suginda</p>
-            <button class="btn-login" id="btn-login-utama" onclick="masukAplikasi()">Masuk</button>
+            <button class="btn-login" id="btn-login-utama" onclick="masukAplikasi()">Masuk Dashboard</button>
         </div>
     </div>
-
     <!-- APP LAYOUT -->
     <div id="app-layout">
         <div class="top-navbar">
@@ -129,7 +128,6 @@
                 <div class="nav-item" onclick="switchView('rekening', this)"><i class="fas fa-building-columns"></i> <span>Rekening</span></div>
             </div>
         </div>
-
         <!-- MAIN CONTENT AREA -->
         <div class="main-content">
             <!-- DASHBOARD -->
@@ -140,7 +138,7 @@
                 </div>
                 <div class="summary-cards">
                     <div class="card"><div class="card-title"><i class="fas fa-coins" style="color: #ffb300;"></i> SALDO (HSBC)</div><div class="card-amount" id="card-saldo">Rp 0</div></div>
-                    <div class="card"><div class="card-title"><i class="fas fa-check-circle" style="color: var(--success);"></i> PENGELUARAN BLN INI</div><div class="card-amount" id="card-net">Rp 0</div></div>
+                    <div class="card danger"><div class="card-title"><i class="fas fa-calendar-alt" style="color: var(--danger);"></i> PENGELUARAN (TGL 25-24)</div><div class="card-amount" id="card-pengeluaran-bulan">Rp 0</div></div>
                     <div class="card"><div class="card-title"><i class="fas fa-arrow-up" style="color: #4285f4;"></i> MASUK HSBC</div><div class="card-amount" id="card-pemasukan">Rp 0</div></div>
                     <div class="card danger"><div class="card-title"><i class="fas fa-arrow-down" style="color: #ea4335;"></i> KELUAR HSBC</div><div class="card-amount" id="card-pengeluaran">Rp 0</div></div>
                 </div>
@@ -153,7 +151,6 @@
                     <div id="riwayat-container">Memuat data...</div>
                 </div>
             </div>
-
             <!-- INPUT TRANSAKSI -->
             <div id="view-input" class="view-section">
                 <div class="page-header"><h2>Input Transaksi</h2></div>
@@ -205,15 +202,7 @@
                             <label>Subkategori</label>
                             <select id="subkategori" name="subkategori" required>
                                 <option value="" disabled selected>-- Pilih --</option>
-                                <option value="Gajihan">Gajihan</option>
-                                <option value="Belanja dapur">Belanja dapur</option>
-                                <option value="Hutang">Hutang</option>
-                                <option value="Tabungan">Tabungan</option>
-                                <option value="Bensin">Bensin</option>
-                                <option value="Jajan">Jajan</option>
-                                <option value="Healing">Healing</option>
-                                <option value="Tarik_Tunai">Tarik Tunai</option>
-                                <option value="Lain-lain">Lain-lain</option>
+                                <option value="Gajihan">Gajihan</option><option value="Belanja dapur">Belanja dapur</option><option value="Hutang">Hutang</option><option value="Tabungan">Tabungan</option><option value="Bensin">Bensin</option><option value="Jajan">Jajan</option><option value="Healing">Healing</option><option value="Lain-lain">Lain-lain</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -229,7 +218,6 @@
                     </form>
                 </div>
             </div>
-
             <!-- REKAP -->
             <div id="view-rekap" class="view-section">
                 <div class="page-header"><h2>Laporan & Rekap</h2></div>
@@ -239,7 +227,6 @@
                     <div id="rekap-container">Memuat data rekap...</div>
                 </div>
             </div>
-
             <!-- REKENING -->
             <div id="view-rekening" class="view-section">
                 <div class="page-header"><h2>Manajemen Rekening</h2></div>
@@ -268,7 +255,6 @@
             </div>
         </div>
     </div>
-
     <script>
     // PERHATIAN: Pastikan URL ini adalah URL Web App Google Apps Script terbaru Anda
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwpXnIUihO6dKYbb-lMHMTUAJeXs3bZEnGhLaZJbLffP6so42WmDYJANPc3bScxZ0g/exec";
@@ -299,13 +285,11 @@
             if (fungsiGagal) fungsiGagal(error);
         });
     } 
-
     const formatRupiah = new Intl.NumberFormat('id-ID', { 
         style: 'currency', 
         currency: 'IDR', 
         minimumFractionDigits: 0 
     });
-
     const bankLogos = {
         'hsbc': 'https://upload.wikimedia.org/wikipedia/commons/a/aa/HSBC_logo_%282018%29.svg',
         'mandiri': 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg',
@@ -320,7 +304,6 @@
         'tunai': 'https://cdn-icons-png.flaticon.com/512/2489/2489756.png',
         'default': 'https://cdn-icons-png.flaticon.com/512/2830/2830284.png' 
     };
-
     function getBankLogo(nama) {
         let key = nama.toLowerCase().trim();
         for (const [bank, url] of Object.entries(bankLogos)) {
@@ -328,13 +311,10 @@
         }
         return bankLogos['default'];
     }
-
     function masukAplikasi() {
         let btn = document.getElementById('btn-login-utama');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memuat Data...';
         btn.disabled = true;
-
-        // Panggil data terlebih dahulu untuk menghindari layar putih kosong
         panggilGAS('getDashboardData', null, 
             function(data) {
                 document.getElementById('view-landing').style.opacity = '0';
@@ -354,13 +334,11 @@
             }
         );
     }
-
     function keluarAplikasi() {
         document.getElementById('app-layout').style.display = 'none';
         document.getElementById('view-landing').style.display = 'flex';
         setTimeout(() => { document.getElementById('view-landing').style.opacity = '1'; }, 50);
     }
-
     function switchView(viewName, element) {
         document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -370,7 +348,6 @@
         if (viewName === 'dashboard' || viewName === 'rekening' || viewName === 'input') loadDashboardData();
         if (viewName === 'rekap') loadRekapData();
     }
-
     function setDefaultDate() {
         const today = new Date();
         const year = today.getFullYear();
@@ -382,14 +359,12 @@
         document.getElementById("bulan").value = bulanArray[today.getMonth()];
         document.getElementById('update-time').innerText = `${day}/${month}/${year}, ${today.getHours()}:${String(today.getMinutes()).padStart(2, '0')}`;
     }
-
     document.getElementById('jumlah_tampil').addEventListener('input', function(e) {
         let rawValue = this.value.replace(/[^0-9]/g, '');
         document.getElementById('jumlah').value = rawValue;
         if (rawValue !== '') this.value = parseInt(rawValue, 10).toLocaleString('id-ID');
         else this.value = '';
     });
-
     function toggleTransferFields() {
         const kat = document.getElementById('kategori').value;
         const tfBox = document.getElementById('transfer-box');
@@ -401,7 +376,6 @@
             document.getElementById('bank_tujuan').required = false;
         }
     }
-
     function toggleBankBaru() {
         const val = document.getElementById('bank_tujuan').value;
         const rekInput = document.getElementById('rekening_tujuan');
@@ -418,23 +392,21 @@
             rekInput.readOnly = true;
         }
     }
-
     function loadDashboardData() {
-        // Menggunakan panggilGAS alih-alih google.script.run
         panggilGAS('getDashboardData', null, function(data) {
             renderDashboard(data);
             renderRekeningOption(data.daftarRekening);
         });
     }
-
     function renderDashboard(data) {
         document.getElementById('card-saldo').innerText = formatRupiah.format(data.totalSaldo);
         document.getElementById('card-pemasukan').innerText = formatRupiah.format(data.totalPemasukan);
         document.getElementById('card-pengeluaran').innerText = formatRupiah.format(data.totalPengeluaran);
         
-        let elNet = document.getElementById('card-net');
-        elNet.innerText = formatRupiah.format(data.netBulanIni);
-        elNet.style.color = data.netBulanIni < 0 ? 'var(--danger)' : 'var(--success)';
+        // Memasukkan Nilai Pengeluaran Khusus Tanggal 25 - 24
+        let elPengeluaranBulan = document.getElementById('card-pengeluaran-bulan');
+        elPengeluaranBulan.innerText = formatRupiah.format(data.pengeluaranBulanIni);
+        elPengeluaranBulan.style.color = 'var(--danger)';
         
         let htmlRekDashboard = "";
         let htmlRekFull = "";
@@ -448,7 +420,6 @@
             if (indexB === -1) indexB = 999;
             return indexA - indexB;
         });
-
         for (const [namaRekening, info] of sortedRekening) {
             let logoUrl = getBankLogo(namaRekening);
             let colorClass = info.saldo < 0 ? 'text-danger' : 'text-success';
@@ -516,7 +487,6 @@
         container.innerHTML = htmlRiwayat;
         setDefaultDate();
     }
-
     function renderRekeningOption(daftarRekening) {
         let selectTujuan = document.getElementById('bank_tujuan');
         selectTujuan.innerHTML = `<option value="" disabled selected>-- Pilih Bank Tujuan --</option>`;
@@ -534,7 +504,6 @@
         }
         selectTujuan.innerHTML += `<option value="baru">+ Tambah Bank Baru...</option>`;
     }
-
     function prosesTambahRekening() {
         let nama = document.getElementById('add-rek-nama').value.trim();
         let nomor = document.getElementById('add-rek-nomor').value.trim();
@@ -543,7 +512,6 @@
         let btn = document.getElementById('btn-tambah-rek');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...'; btn.disabled = true;
         
-        // Menggunakan panggilGAS alih-alih google.script.run
         panggilGAS('tambahRekening', { nama: nama, nomor: nomor }, function(data) {
             document.getElementById('add-rek-nama').value = "";
             document.getElementById('add-rek-nomor').value = "";
@@ -553,23 +521,19 @@
             alert("Rekening berhasil ditambahkan.");
         });
     }
-
     function prosesHapusRekening(nama) {
         if(confirm("Hapus rekening '" + nama + "'? \nData historis tidak akan hilang.")) {
-            // Menggunakan panggilGAS alih-alih google.script.run
             panggilGAS('hapusRekening', { nama: nama }, function(data) {
                 renderDashboard(data);
                 renderRekeningOption(data.daftarRekening);
             });
         }
     }
-
     function submitForm(e) {
         e.preventDefault();
         const btn = document.getElementById('btn-submit');
         const form = document.getElementById('keuanganForm');
         
-        // Menyusun object data secara manual untuk dikirim lewat fetch
         const dataForm = {
             bulan: form.bulan.value,
             tanggal: form.tanggal.value,
@@ -585,7 +549,6 @@
         
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
         
-        // Menggunakan panggilGAS alih-alih google.script.run
         panggilGAS('processForm', dataForm, 
             function(res) {
                 alert(res);
@@ -601,9 +564,7 @@
             }
         );
     }
-
     function loadRekapData() {
-        // Menggunakan panggilGAS alih-alih google.script.run
         panggilGAS('getRekapData', null, function(data) {
             let container = document.getElementById('rekap-container');
             if (!data || data.length === 0) { container.innerHTML = "<div style='color:var(--text-gray); font-size:13px;'>Belum ada data arsip.</div>"; return; }
@@ -621,17 +582,14 @@
             container.innerHTML = html;
         });
     }
-
     function confirmReset() {
         if (confirm("TUTUP BUKU BULAN INI?\nData akan direkap dan dikosongkan.")) {
-            // Menggunakan panggilGAS alih-alih google.script.run
             panggilGAS('archiveAndResetData', null, function(res) { 
                 alert(res); 
                 loadRekapData(); 
             });
         }
     }
-
     function toggleFormRekening() {
         var form = document.getElementById("form-tambah-rek");
         if (form.style.display === "none" || form.style.display === "") {
@@ -644,7 +602,6 @@
     window.onload = function() { setDefaultDate(); };
     </script>
     <script>
-        // Mendaftarkan Service Worker untuk PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
