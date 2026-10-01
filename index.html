@@ -405,7 +405,7 @@
         
         // Memasukkan Nilai Pengeluaran Khusus Tanggal 25 - 24
         let elPengeluaranBulan = document.getElementById('card-pengeluaran-bulan');
-        elPengeluaranBulan.innerText = formatRupiah.format(data.pengeluaranBulanIni);
+elPengeluaranBulan.innerText = formatRupiah.format(data.pengeluaranBulanIni || 0);
         elPengeluaranBulan.style.color = 'var(--danger)';
         
         let htmlRekDashboard = "";
